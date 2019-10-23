@@ -1,0 +1,28 @@
+{
+  "name": "athena",
+  "version": "1.0.0",
+  "description": "Presentation Framework",
+  "main": "webpack.config.js",
+  "dependencies": {
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.6.4",
+    "webpack": "^4.41.2"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.3.9"
+  },
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cjgammon/athena.git"
+  },
+  "author": "cjgammon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cjgammon/athena/issues"
+  },
+  "homepage": "https://github.com/cjgammon/athena#readme"
+}
