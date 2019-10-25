@@ -7,7 +7,7 @@ export class Athena {
 	version: number = 0.1;
 	rootElement: HTMLElement;
 	slides: Array<Element> = [];
-	current: number = 0;
+	currentSlide: number = 0;
 
 	private _consoleStyle: Array<string> = [
 		'background: #44918F',
@@ -20,8 +20,6 @@ export class Athena {
 		let message: string = `%c//${this.name} v${this.version}\\\\`;
 		let consoleStyle: string = this._consoleStyle.join('; ');
 		console.log(message, consoleStyle);
-
-		this.registerEvents();
 	}
 
 	generate(selector: string = '.athena-slide') {
@@ -29,10 +27,38 @@ export class Athena {
 
 		this.createRoot();
 		this.createSlides(selector);
+
+		this.registerEvents();
+
+		this.getSlideFromHash();
 	}
 
-	private registerEvents() {
-		window.addEventListener('hashchange', (e) => this.hashChange(e));
+	//TODO:: abstract set slide by number id vs setslide by string id
+	gotoSlide(n: number) {
+		window.location.hash = `slide/${n}`;
+	}
+
+	private setSlide(n: number) {
+		let currentSlides = document.querySelectorAll('.current');
+		for (let i:number = 0; i < currentSlides.length; i++) {
+			currentSlides[i].classList.remove('current');
+		}
+		this.slides[n].classList.add('current');
+		this.currentSlide = n;
+	}
+
+	private getSlideFromHash() {
+		if (window.location.hash) {
+			let slide:string = window.location.hash.replace('#slide/', '');
+			let n: number = parseInt(slide);
+			if (!isNaN(n)) {
+				this.setSlide(n);
+			} else {
+				//TODO:: set slide by stringId
+			}
+		} else {
+			this.setSlide(this.currentSlide);
+		}
 	}
 
 	private createRoot() {
@@ -61,8 +87,37 @@ export class Athena {
 		document.getElementsByTagName('head')[0].appendChild(style);
 	}
 
-	hashChange(e) {
-		console.log('hash change', e);
+	private registerEvents() {
+		window.addEventListener('hashchange', (e) => this.hashChange(e));
+		window.addEventListener('keydown', (e) => this.keyDown(e));
+		window.addEventListener('keyup', (e) => this.keyUp(e));
+	}
+
+	//event handlers
+	private hashChange(e:HashChangeEvent) {
+		let hash = window.location.hash;
+		console.log(hash);
+		this.getSlideFromHash();
+	}
+
+	private keyDown(e:KeyboardEvent) {
+
+		let nextSlide: number;
+
+		switch(e.code) {
+			case 'ArrowRight':
+				nextSlide = this.currentSlide < this.slides.length - 1 ? this.currentSlide + 1 : this.slides.length - 1;
+				this.gotoSlide(nextSlide);
+				break;
+			case 'ArrowLeft':
+				nextSlide = this.currentSlide > 0 ? this.currentSlide - 1 : 0;
+				this.gotoSlide(nextSlide);
+				break;
+		}
+	}
+
+	private keyUp(e:KeyboardEvent) {
+
 	}
 }
 
