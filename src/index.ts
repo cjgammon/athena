@@ -1,10 +1,12 @@
 
-import Pres from 'src/views/pres';
+import Deck from './views/deck/deck';
+import SlideTypes from './models/slideTypes';
 
 export class Athena {
 	name: string = "Athena";
 	version: number = 0.1;
-	pres: Pres;
+	deck: Deck;
+	slideTypes: any = SlideTypes;
 
 	private _consoleStyle: Array<string> = [
 		'background: #44918F',
@@ -20,7 +22,7 @@ export class Athena {
 	}
 
 	generate(selector: string = '.athena-slide') {
-		this.pres = new Pres(selector);
+		this.deck = new Deck(selector);
 	}
 
 }
