@@ -1,5 +1,5 @@
 import Slide from './slide';
-import DeckModel from 'src/models/deckModel';
+import ConfigModel from 'src/models/configModel';
 
 export default class SlideStep extends Slide{
     steps: Array<HTMLElement> = [];
@@ -8,9 +8,11 @@ export default class SlideStep extends Slide{
     constructor(_index: number, _el: HTMLElement) {
         super(_index, _el);
 
-        let lists: Array<HTMLElement> = [].slice.call(_el.querySelectorAll('li'));
-        let steps: Array<HTMLElement> = [].slice.call(_el.querySelectorAll(DeckModel.stepSelector));
-        steps = steps.concat(lists);
+        let steps: Array<HTMLElement> = [].slice.call(_el.querySelectorAll(ConfigModel.stepSelector));
+        if (ConfigModel.stepListItems) {
+            let lists: Array<HTMLElement> = [].slice.call(_el.querySelectorAll('li'));
+            steps = steps.concat(lists);
+        }
         this.steps = steps;
     }
 

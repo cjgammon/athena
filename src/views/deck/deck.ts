@@ -7,16 +7,17 @@ import SlideBasic from './slides/slide';
 import SlideEvent from 'src/events/SlideEvent';
 import SlideTypes from 'src/models/slideTypes';
 import DeckModel from 'src/models/deckModel';
+import ConfigModel from 'src/models/configModel';
 
 export default class Deck{
     rootElement: HTMLElement;
 	slides: Array<SlideBasic> = [];
     
-    constructor(selector: string = '.athena-slide') {
+    constructor() {
 		this.addStyles();
 
 		this.createRoot();
-		this.createSlides(selector);
+		this.createSlides();
 
 		this.registerEvents();
 		this.resetAllSlides();
@@ -62,6 +63,10 @@ export default class Deck{
 	 */
 	private setSlide(_n: any) {
 
+		if (this.slides.length == 0) {
+			return;
+		}
+
 		let slide: SlideBasic;
 		if (!isNaN(_n)) {
 			slide = this.slides[_n];
@@ -76,7 +81,6 @@ export default class Deck{
 		} else {
 			slide.animIn();
 		}
-
 	}
 
 	private getSlideFromHash() {
@@ -99,8 +103,8 @@ export default class Deck{
 		document.body.appendChild(this.rootElement);
 	}
 
-	private createSlides(_selector: string) {
-		let slideEls: Array<HTMLElement> = [].slice.call(document.querySelectorAll(_selector));
+	private createSlides() {
+		let slideEls: Array<HTMLElement> = [].slice.call(document.querySelectorAll(ConfigModel.slideSelector));
 		for (let i: number = 0; i < slideEls.length; i++) {
 
 			let slideEl: HTMLElement = slideEls[i];
@@ -110,6 +114,10 @@ export default class Deck{
 			let slide: SlideBasic = new SlideClass(i, slideEl);
 			slide.setParent(this.rootElement);
 			this.slides.push(slide);
+		}
+
+		if (this.slides.length == 0) {
+			console.warn('no slides with selector: ', ConfigModel.slideSelector);
 		}
 	}
 
@@ -167,9 +175,11 @@ export default class Deck{
 		}
 
 		//step reveal
-		let lists: Array<HTMLElement> = [].slice.call(el.querySelectorAll('li'));
-		let steps: Array<HTMLElement> = [].slice.call(el.querySelectorAll(DeckModel.stepSelector));
-		steps = steps.concat(lists);
+		let steps: Array<HTMLElement> = [].slice.call(el.querySelectorAll(ConfigModel.stepSelector));
+		if (ConfigModel.stepListItems) {
+			let lists: Array<HTMLElement> = [].slice.call(el.querySelectorAll('li'));
+			steps = steps.concat(lists);
+		}
 		if (steps.length > 0) {
 			return SlideTypes['step'];
 		}

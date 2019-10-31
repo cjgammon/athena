@@ -16,18 +16,17 @@ export class Athena {
 		'padding: 0.2em'
 	];
 
-	constructor(config: any) {
+	constructor() {
 		let message: string = `%c//${this.name} v${this.version}\\\\`;
 		let consoleStyle: string = this._consoleStyle.join('; ');
 		console.log(message, consoleStyle);
+	}
 
+	generate(config: any) {
 		for (let i in config) {
 			ConfigModel[i] = config[i];
 		}
-	}
-
-	generate(selector: string = '.athena-slide') {
-		this.deck = new Deck(selector);
+		this.deck = new Deck();
 	}
 
 }

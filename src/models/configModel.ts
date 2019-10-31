@@ -3,7 +3,9 @@ interface IConfigModel {
 };
 
 let ConfigModel: IConfigModel = {
-    stepSelector: '.step'
+    slideSelector: '.slide',
+    stepSelector: '.step',
+    stepListItems: true
 };
 
 export default ConfigModel;
