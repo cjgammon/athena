@@ -40,7 +40,7 @@ export default class SlideBasic implements ISlide{
         this.in = true;
     }
 
-    animOut() {
+    animOut(): Promise<any> {
         return new Promise((resolve, reject) => {
             this.setCurrent(false);
             this.in = false;
@@ -49,7 +49,6 @@ export default class SlideBasic implements ISlide{
     }
 
     trigger() {
-        //TODO:: handle <video> or <li> or "step"
         this.el.dispatchEvent(new Event(SlideEvent.NEXT, {bubbles: true}));
     }
 

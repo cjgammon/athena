@@ -2,11 +2,11 @@
 import BasicSlide from '../views/deck/slides/slide';
 import StepSlide from '../views/deck/slides/slideStep';
 
-interface SlideTypesMap {
+interface ISlideTypes {
     [name: string]: any
 };
 
-let SlideTypes: SlideTypesMap = {
+let SlideTypes: ISlideTypes = {
     basic: BasicSlide,
     step: StepSlide
 };

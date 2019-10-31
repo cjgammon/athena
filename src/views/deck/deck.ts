@@ -3,11 +3,10 @@
 import AthenaCSS from "!!raw-loader!src/athena.css";
 
 import SlideBasic from './slides/slide';
-import {ISlide} from './slides/slide';
 
 import SlideEvent from 'src/events/SlideEvent';
-import SlideTypes from '../../models/slideTypes';
-import DeckModel from '../../models/deckModel';
+import SlideTypes from 'src/models/slideTypes';
+import DeckModel from 'src/models/deckModel';
 
 export default class Deck{
     rootElement: HTMLElement;
@@ -101,13 +100,13 @@ export default class Deck{
 	}
 
 	private createSlides(_selector: string) {
-		let slideEls: Array<HTMLElement> = <HTMLElement[]><any>document.querySelectorAll(_selector);
+		let slideEls: Array<HTMLElement> = [].slice.call(document.querySelectorAll(_selector));
 		for (let i: number = 0; i < slideEls.length; i++) {
 
 			let slideEl: HTMLElement = slideEls[i];
 			slideEl.parentNode.removeChild(slideEl);
 
-			let SlideClass: any = this.findSlideType(slideEl);
+			let SlideClass: typeof SlideBasic = this.findSlideType(slideEl);
 			let slide: SlideBasic = new SlideClass(i, slideEl);
 			slide.setParent(this.rootElement);
 			this.slides.push(slide);
@@ -157,7 +156,9 @@ export default class Deck{
 
 	}
 
-	private findSlideType(el: HTMLElement) {
+	private findSlideType(el: HTMLElement): typeof SlideBasic {
+
+		//custom slide
 		if (el.dataset['slide-type']) {
 			let slideTypeName: string = el.dataset['slide-type'];
 			if (SlideTypes.hasOwnProperty(slideTypeName)) {
@@ -165,12 +166,15 @@ export default class Deck{
 			}
 		}
 
-		let lists: NodeList = el.querySelectorAll('li');
-		if (lists.length > 0) {
-			console.log('yhes');
+		//step reveal
+		let lists: Array<HTMLElement> = [].slice.call(el.querySelectorAll('li'));
+		let steps: Array<HTMLElement> = [].slice.call(el.querySelectorAll(DeckModel.stepSelector));
+		steps = steps.concat(lists);
+		if (steps.length > 0) {
 			return SlideTypes['step'];
 		}
 
+		//basic slide
 		return SlideTypes['basic'];
 	}
 	

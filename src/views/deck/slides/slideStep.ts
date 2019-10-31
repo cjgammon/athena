@@ -1,5 +1,5 @@
 import Slide from './slide';
-import SlideEvent from '../../../events/SlideEvent';
+import DeckModel from 'src/models/deckModel';
 
 export default class SlideStep extends Slide{
     steps: Array<HTMLElement> = [];
@@ -8,7 +8,10 @@ export default class SlideStep extends Slide{
     constructor(_index: number, _el: HTMLElement) {
         super(_index, _el);
 
-        this.steps = <HTMLElement[]><any>_el.querySelectorAll('li');
+        let lists: Array<HTMLElement> = [].slice.call(_el.querySelectorAll('li'));
+        let steps: Array<HTMLElement> = [].slice.call(_el.querySelectorAll(DeckModel.stepSelector));
+        steps = steps.concat(lists);
+        this.steps = steps;
     }
 
     animIn() {
@@ -17,9 +20,8 @@ export default class SlideStep extends Slide{
             step.style.opacity = "0";
         }
 
-        this.setCurrent(true);
-        this.in = true;
         this.currentStep = 0;
+        super.animIn();
     }
 
     trigger() {
@@ -28,7 +30,7 @@ export default class SlideStep extends Slide{
             this.steps[this.currentStep].style.opacity = "1";
             this.currentStep++;
         } else {
-            this.el.dispatchEvent(new Event(SlideEvent.NEXT, {bubbles: true}));
+            super.trigger();
         }
     }
 }

@@ -1,4 +1,8 @@
-let DeckModel = {
+interface IDeckModel {
+    [name: string]: any
+};
+
+let DeckModel: IDeckModel = {
     currentSlide: 0
 };
 
