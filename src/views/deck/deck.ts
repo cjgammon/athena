@@ -167,8 +167,8 @@ export default class Deck{
 	private findSlideType(el: HTMLElement): typeof SlideBasic {
 
 		//custom slide
-		if (el.dataset['slide-type']) {
-			let slideTypeName: string = el.dataset['slide-type'];
+		if (el.dataset['slideType']) {
+			let slideTypeName: string = el.dataset['slideType'];
 			if (SlideTypes.hasOwnProperty(slideTypeName)) {
 				return SlideTypes[slideTypeName];
 			}

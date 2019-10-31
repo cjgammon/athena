@@ -1,6 +1,7 @@
 
 import BasicSlide from '../views/deck/slides/slide';
 import StepSlide from '../views/deck/slides/slideStep';
+import IframeSlide from '../views/deck/slides/slideIframe';
 
 interface ISlideTypes {
     [name: string]: any
@@ -8,7 +9,8 @@ interface ISlideTypes {
 
 let SlideTypes: ISlideTypes = {
     basic: BasicSlide,
-    step: StepSlide
+    step: StepSlide,
+    iframe: IframeSlide
 };
 
 export default SlideTypes;

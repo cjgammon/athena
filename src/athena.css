@@ -14,3 +14,20 @@
 	opacity: 1;
 	pointer-events: auto;
 }
+
+.athena-iframe-clickarea{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.athena-iframe-clickarea.focus{
+	pointer-events: none;
+	cursor: auto;
+}
+
+.athena-iframe.focus{
+	outline: 100px solid rgba(255, 255, 255, .75);
+}
