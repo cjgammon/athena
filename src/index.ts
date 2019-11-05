@@ -3,12 +3,14 @@ import Deck from 'src/views/deck/deck';
 import SlideTypes from 'src/models/slideTypes';
 import ConfigModel from 'src/models/configModel';
 import Hud from './views/hud/hud';
+import {default as bus, EventBus} from 'src/events/EventBus';
 
 export class Athena {
 	name: string = "Athena";
 	version: number = 0.1;
 	deck: Deck;
 	hud: Hud;
+	eventBus: EventBus = bus;
 	slideTypes: any = SlideTypes; //for adding new types
 
 	private _consoleStyle: Array<string> = [
@@ -30,18 +32,8 @@ export class Athena {
 		}
 
 		this.deck = new Deck();
-		this.hud = new Hud();
-
-		window.addEventListener('keydown', (e) => this.keyDown(e));
+		this.hud = new Hud(this.deck.rootElement);
 	}
-
-	private keyDown(e: KeyboardEvent) {
-        switch(e.code) {
-            case 'Escape':
-                this.hud.toggle();
-                break;
-        }
-    }
 
 }
 

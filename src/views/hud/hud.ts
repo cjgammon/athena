@@ -14,10 +14,12 @@ export default class Hud{
     keyDownHandler: any;
     keyUpHandler: any;
 
-    constructor() {
+    constructor(parent: HTMLElement) {
         this.container = document.createElement('div');
         this.container.className = 'athena-hud';
-        document.body.appendChild(this.container);
+        parent.appendChild(this.container);
+
+        window.addEventListener('keydown', (e) => this.checkToggle(e));
     }
 
     show() {
@@ -33,19 +35,28 @@ export default class Hud{
         this.removeEvents();
     }
 
-    registerEvents() {
+    toggle() {
+        this.visible = !this.visible;
+        if (this.visible) {
+            this.show();
+        } else {
+            this.hide();
+        }
+    }
+
+    private registerEvents() {
         this.keyDownHandler = (e: KeyboardEvent) => this.keyDown(e);
         this.keyUpHandler = (e: KeyboardEvent) => this.keyUp(e);
 		window.addEventListener('keydown', this.keyDownHandler);
 		window.addEventListener('keyup', this.keyUpHandler);
     }
 
-    removeEvents() {
+    private removeEvents() {
 		window.removeEventListener('keydown', this.keyDownHandler);
 		window.removeEventListener('keyup', this.keyUpHandler);
     }
 
-    resetList() {
+    private resetList() {
         this.list = [];
         for (let i = 0; i < DeckModel.slides.length; i++){
             let slide: SlideBasic = DeckModel.slides[i];
@@ -53,7 +64,7 @@ export default class Hud{
         }
     }
 
-    populateList() {
+    private populateList() {
         this.listContainer = document.createElement('div');
         this.listContainer.className = 'athena-hud-list';
 
@@ -69,20 +80,19 @@ export default class Hud{
         this.container.appendChild(this.listContainer);
     }
 
-    toggle() {
-        this.visible = !this.visible;
-        if (this.visible) {
-            this.show();
-        } else {
-            this.hide();
+    private checkToggle(e: KeyboardEvent) {
+        switch(e.code) {
+            case 'Escape':
+                this.toggle();
+                break;
         }
     }
 
-    keyDown(e: KeyboardEvent) {
-        console.log('keuydoen', e.code);
+    private keyDown(e: KeyboardEvent) {
+        console.log('keydown..', e.code);
     }
 
-    keyUp(e: KeyboardEvent) {
+    private keyUp(e: KeyboardEvent) {
 
     }
 }

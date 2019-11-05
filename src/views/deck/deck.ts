@@ -8,6 +8,7 @@ import SlideEvent from 'src/events/SlideEvent';
 import SlideTypes from 'src/models/slideTypes';
 import DeckModel from 'src/models/deckModel';
 import ConfigModel from 'src/models/configModel';
+import {default as bus, EventBus} from 'src/events/EventBus';
 
 export default class Deck{
     rootElement: HTMLElement;
@@ -73,10 +74,12 @@ export default class Deck{
 			slide = this.getSlideById(_n);
 		}
 
+		//NOTE:: if any fun camera work it would go here.
+
 		let prevSlide: SlideBasic = DeckModel.slides[DeckModel.currentSlide];
 		if (prevSlide.in) {
 			prevSlide.animOut()
-			.then(() => slide.animIn());
+				.then(() => slide.animIn());
 		} else {
 			slide.animIn();
 		}
@@ -128,9 +131,10 @@ export default class Deck{
 	}
 
 	private registerEvents() {
-		this.rootElement.addEventListener(SlideEvent.NEXT, () => this.next());
-		this.rootElement.addEventListener(SlideEvent.PREV, () => this.previous());
-		this.rootElement.addEventListener(SlideEvent.TRIGGER, () => this.trigger());
+
+		bus.subscribe(SlideEvent.NEXT, () => this.next());
+		bus.subscribe(SlideEvent.PREV, () => this.previous());
+		bus.subscribe(SlideEvent.TRIGGER, () => this.trigger());
 
 		window.addEventListener('hashchange', (e) => this.hashChange(e));
 		window.addEventListener('keydown', (e) => this.keyDown(e));
@@ -147,13 +151,13 @@ export default class Deck{
 	private keyDown(e:KeyboardEvent) {
 		switch(e.code) {
 			case 'ArrowRight':
-				this.rootElement.dispatchEvent(new Event(SlideEvent.NEXT));
+				bus.dispatch(SlideEvent.NEXT);
 				break;
 			case 'ArrowLeft':
-				this.rootElement.dispatchEvent(new Event(SlideEvent.PREV));
+				bus.dispatch(SlideEvent.PREV);
 				break;
 			case 'Space':
-				this.rootElement.dispatchEvent(new Event(SlideEvent.TRIGGER));
+				bus.dispatch(SlideEvent.TRIGGER);
 				break;
 		}
 	}

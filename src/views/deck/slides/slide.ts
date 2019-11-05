@@ -1,5 +1,6 @@
 import SlideEvent from 'src/events/SlideEvent';
 import DeckModel from 'src/models/deckModel';
+import {default as bus, EventBus} from 'src/events/EventBus';
 
 export interface ISlide {
     id: string;
@@ -49,7 +50,7 @@ export default class SlideBasic implements ISlide{
     }
 
     trigger() {
-        this.el.dispatchEvent(new Event(SlideEvent.NEXT, {bubbles: true}));
+        bus.dispatch(SlideEvent.NEXT);
     }
 
     setParent(_parent: HTMLElement) {
