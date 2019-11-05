@@ -11,7 +11,6 @@ import ConfigModel from 'src/models/configModel';
 
 export default class Deck{
     rootElement: HTMLElement;
-	slides: Array<SlideBasic> = [];
     
     constructor() {
 		this.addStyles();
@@ -26,7 +25,7 @@ export default class Deck{
     }
 
 	gotoSlideByIndex(_n: number) {
-		let slide = this.slides[_n];
+		let slide = DeckModel.slides[_n];
 		let slideId = slide.id;
 		this.gotoSlideById(slideId);
 	}
@@ -36,15 +35,15 @@ export default class Deck{
 	}
 
 	getSlideById(_id: string) {
-		for (let i:number = 0; i < this.slides.length; i++) {
-			if (this.slides[i].id == _id) {
-				return this.slides[i];
+		for (let i:number = 0; i < DeckModel.slides.length; i++) {
+			if (DeckModel.slides[i].id == _id) {
+				return DeckModel.slides[i];
 			}
 		}
 	}
 
 	next() {
-		let nextSlide = DeckModel.currentSlide < this.slides.length - 1 ? DeckModel.currentSlide + 1 : this.slides.length - 1;
+		let nextSlide = DeckModel.currentSlide < DeckModel.slides.length - 1 ? DeckModel.currentSlide + 1 : DeckModel.slides.length - 1;
 		this.gotoSlideByIndex(nextSlide);
 	}
 
@@ -54,7 +53,7 @@ export default class Deck{
 	}
 
 	trigger() {
-		this.slides[DeckModel.currentSlide].trigger();
+		DeckModel.slides[DeckModel.currentSlide].trigger();
 	}
 
 	/**
@@ -63,18 +62,18 @@ export default class Deck{
 	 */
 	private setSlide(_n: any) {
 
-		if (this.slides.length == 0) {
+		if (DeckModel.slides.length == 0) {
 			return;
 		}
 
 		let slide: SlideBasic;
 		if (!isNaN(_n)) {
-			slide = this.slides[_n];
+			slide = DeckModel.slides[_n];
 		} else {
 			slide = this.getSlideById(_n);
 		}
 
-		let prevSlide: SlideBasic = this.slides[DeckModel.currentSlide];
+		let prevSlide: SlideBasic = DeckModel.slides[DeckModel.currentSlide];
 		if (prevSlide.in) {
 			prevSlide.animOut()
 			.then(() => slide.animIn());
@@ -113,10 +112,10 @@ export default class Deck{
 			let SlideClass: typeof SlideBasic = this.findSlideType(slideEl);
 			let slide: SlideBasic = new SlideClass(i, slideEl);
 			slide.setParent(this.rootElement);
-			this.slides.push(slide);
+			DeckModel.slides.push(slide);
 		}
 
-		if (this.slides.length == 0) {
+		if (DeckModel.slides.length == 0) {
 			console.warn('no slides with selector: ', ConfigModel.slideSelector);
 		}
 	}
@@ -132,7 +131,6 @@ export default class Deck{
 		this.rootElement.addEventListener(SlideEvent.NEXT, () => this.next());
 		this.rootElement.addEventListener(SlideEvent.PREV, () => this.previous());
 		this.rootElement.addEventListener(SlideEvent.TRIGGER, () => this.trigger());
-
 
 		window.addEventListener('hashchange', (e) => this.hashChange(e));
 		window.addEventListener('keydown', (e) => this.keyDown(e));
@@ -189,8 +187,8 @@ export default class Deck{
 	}
 	
 	private resetAllSlides() {
-		for (let i:number = 0; i < this.slides.length; i++) {
-			this.slides[i].setCurrent(false);
+		for (let i:number = 0; i < DeckModel.slides.length; i++) {
+			DeckModel.slides[i].setCurrent(false);
 		}
 	}
 	
