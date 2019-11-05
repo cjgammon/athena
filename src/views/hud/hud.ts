@@ -1,6 +1,9 @@
 import DeckModel from 'src/models/deckModel';
 import SlideBasic from 'src/views/deck/slides/slide';
 
+import {default as bus, EventBus} from 'src/events/EventBus';
+import UserEvent from 'src/events/UserEvent';
+
 interface IHudItem {
     number: number,
     name: string
@@ -11,15 +14,15 @@ export default class Hud{
     listContainer: HTMLElement;
     list: Array<IHudItem> = [];
     visible: boolean = false;
-    keyDownHandler: any;
-    keyUpHandler: any;
+    keyDownEvent: any;
+    keyUpEvent: any;
 
     constructor(parent: HTMLElement) {
         this.container = document.createElement('div');
         this.container.className = 'athena-hud';
         parent.appendChild(this.container);
 
-        window.addEventListener('keydown', (e) => this.checkToggle(e));
+        bus.subscribe(UserEvent.KEYDOWN, (e: KeyboardEvent) => this.checkToggle(e));
     }
 
     show() {
@@ -45,15 +48,13 @@ export default class Hud{
     }
 
     private registerEvents() {
-        this.keyDownHandler = (e: KeyboardEvent) => this.keyDown(e);
-        this.keyUpHandler = (e: KeyboardEvent) => this.keyUp(e);
-		window.addEventListener('keydown', this.keyDownHandler);
-		window.addEventListener('keyup', this.keyUpHandler);
+        this.keyDownEvent = bus.subscribe(UserEvent.KEYDOWN, (e: KeyboardEvent) => this.keyDown(e));
+        this.keyUpEvent = bus.subscribe(UserEvent.KEYUP, (e: KeyboardEvent) => this.keyUp(e));
     }
 
     private removeEvents() {
-		window.removeEventListener('keydown', this.keyDownHandler);
-		window.removeEventListener('keyup', this.keyUpHandler);
+        this.keyDownEvent.unsubscribe();
+        this.keyUpEvent.unsubscribe();
     }
 
     private resetList() {

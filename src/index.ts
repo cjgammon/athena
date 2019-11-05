@@ -1,9 +1,12 @@
 
-import Deck from 'src/views/deck/deck';
 import SlideTypes from 'src/models/slideTypes';
 import ConfigModel from 'src/models/configModel';
 import Hud from './views/hud/hud';
+import Deck from 'src/views/deck/deck';
+
 import {default as bus, EventBus} from 'src/events/EventBus';
+import UserEvent from 'src/events/UserEvent';
+import SlideEvent from 'src/events/SlideEvent';
 
 export class Athena {
 	name: string = "Athena";
@@ -11,7 +14,11 @@ export class Athena {
 	deck: Deck;
 	hud: Hud;
 	eventBus: EventBus = bus;
-	slideTypes: any = SlideTypes; //for adding new types
+	slideTypes: any = SlideTypes; 	//exposed for adding new types
+	eventTypes: object = { 			//exposed event types
+		UserEvent,
+		SlideEvent
+	};
 
 	private _consoleStyle: Array<string> = [
 		'background: #44918F',
@@ -24,6 +31,10 @@ export class Athena {
 		let message: string = `%c//${this.name} v${this.version}\\\\`;
 		let consoleStyle: string = this._consoleStyle.join('; ');
 		console.log(message, consoleStyle);
+
+		window.addEventListener('keydown', (e) => bus.dispatch(UserEvent.KEYDOWN, e));
+		window.addEventListener('keyup', (e) => bus.dispatch(UserEvent.KEYUP, e));
+
 	}
 
 	generate(config: any) {

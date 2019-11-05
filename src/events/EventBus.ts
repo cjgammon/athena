@@ -23,7 +23,7 @@ class SubscriptionReference {
     unsubscribe() {
         delete this.bus.subscriptions[this.eventType][this.id];
         if(Object.keys(this.bus.subscriptions[this.eventType]).length === 0) {
-            delete this.bus.subscriptions[this.eventType]
+            delete this.bus.subscriptions[this.eventType];
         }
     }
 }
