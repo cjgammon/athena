@@ -8,7 +8,6 @@ export interface ISlide {
     el: HTMLElement;
     parent: HTMLElement;
     url: string;
-    in: boolean;
 
     animIn: Function;
     animOut: Function;
@@ -24,14 +23,14 @@ export default class SlideBasic implements ISlide{
     el: HTMLElement;
     url: string;
     parent: HTMLElement;
-    in: boolean;
+    bus: EventBus;
     
     constructor(_index: number, _el: HTMLElement) {
         this.index = _index;
         this.el = _el;
         this.id = _el.getAttribute('id') || `slide${_index}`;
         this.url = `slide/${this.id}`;
-        this.in = false;
+        this.bus = bus; //make accessible on slide for extensibility
 
         _el.classList.add('athena-slide');
     }
@@ -41,7 +40,6 @@ export default class SlideBasic implements ISlide{
         bus.dispatch(SlideEvent.ANIMIN);
         
         bus.dispatch(SlideEvent.RESOLVE);
-        this.in = true;
     }
 
     animOut(): Promise<any> {
@@ -50,7 +48,6 @@ export default class SlideBasic implements ISlide{
             bus.dispatch(SlideEvent.ANIMOUT);
 
             bus.dispatch(SlideEvent.DISSOLVE);
-            this.in = false;
             resolve();
         });
     }
@@ -71,5 +68,9 @@ export default class SlideBasic implements ISlide{
         } else {
             this.el.classList.remove('current');
         }
+    }
+
+    isCurrent() {
+        return DeckModel.currentSlide == this.index;
     }
 }

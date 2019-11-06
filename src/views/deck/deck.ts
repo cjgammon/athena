@@ -77,7 +77,7 @@ export default class Deck{
 		//NOTE:: if any fun camera work it would go here.
 
 		let prevSlide: SlideBasic = DeckModel.slides[DeckModel.currentSlide];
-		if (prevSlide.in) {
+		if (prevSlide.isCurrent()) {
 			prevSlide.animOut()
 				.then(() => slide.animIn());
 		} else {
