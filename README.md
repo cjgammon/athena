@@ -1,8 +1,8 @@
-# athena
+# Athena
 Presentation Framework, for making slideshows with HTML.
 <br/>
 
-## usage
+## Usage
  
 Simply include `athena.js` and then call:
 ```
@@ -10,7 +10,7 @@ Athena.generate();
 ```
 <br/>
 
-## configuration
+## Configuration
  
 Certain configuration variables can be changed by passing a configuration object to `generate()`.
 ```
