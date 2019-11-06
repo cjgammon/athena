@@ -1,10 +1,9 @@
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 
-module.exports = {
+let config = {
   context: __dirname,
-  mode: 'development',
   entry: './src/index.ts',
-  devtool: 'inline-source-map',
   module: {
     rules: [
       {
@@ -25,7 +24,28 @@ module.exports = {
     }
   },
   output: {
-    filename: 'athena.js',
+    filename: 'athena.min.js',
     path: path.resolve(__dirname, 'dist'),
-  },
+  }
 };
+
+module.exports = (env, argv) => {
+
+  config.mode = argv.mode;
+
+  if (argv.mode === 'development') {
+
+    config.devtool = 'source-map';
+    config.output.filename = 'athena.js';
+
+  } else if (argv.mode == 'production') {
+
+    config.optimization = {
+      minimize: true,
+      minimizer: [new TerserPlugin()]
+    };
+
+  }
+
+  return config;
+}

@@ -21,3 +21,20 @@ let config = {
 };
 Athena.generate(config);
 ```
+
+## Building
+
+Install node_modules
+```
+npm i
+```
+
+Build Production
+```
+npm run build
+```
+
+Build Dev
+``
+npm run dev
+```
