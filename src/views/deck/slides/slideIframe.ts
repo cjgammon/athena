@@ -5,13 +5,18 @@ export default class SlideIframe extends Slide{
     iframe: HTMLIFrameElement;
     clickArea: HTMLElement;
     boundHandler: any;
+    transition: number;
 
     constructor(_index: number, _el: HTMLElement) {
+
         super(_index, _el);
+
+        this.transition = _el.dataset.transitionDuration ? parseFloat(_el.dataset.transitionDuration) : 0;
     }
 
     animIn() {
-        
+        let delay = this.transition * 1000;
+
         this.iframe = this.el.querySelector('iframe');
         if (!this.iframe) {
             this.iframe = document.createElement('iframe');
@@ -39,9 +44,12 @@ export default class SlideIframe extends Slide{
         this.iframe.style.opacity = '0';
 
         this.iframe.addEventListener('load', () => this.loaded());
-        this.iframe.setAttribute('src', this.el.dataset['src']);
 
         super.animIn();
+
+        setTimeout(() => {
+            this.iframe.setAttribute('src', this.el.dataset['src']);
+        }, delay);
     }
 
     animOut(): Promise<any> {

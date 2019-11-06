@@ -38,12 +38,18 @@ export default class SlideBasic implements ISlide{
 
     animIn() {
         this.setCurrent(true);
+        bus.dispatch(SlideEvent.ANIMIN);
+        
+        bus.dispatch(SlideEvent.RESOLVE);
         this.in = true;
     }
 
     animOut(): Promise<any> {
         return new Promise((resolve, reject) => {
             this.setCurrent(false);
+            bus.dispatch(SlideEvent.ANIMOUT);
+
+            bus.dispatch(SlideEvent.DISSOLVE);
             this.in = false;
             resolve();
         });

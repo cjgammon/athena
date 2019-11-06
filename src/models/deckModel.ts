@@ -1,6 +1,6 @@
 import SlideBasic from 'src/views/deck/slides/slide';
 
-interface IDeckModel {
+export interface IDeckModel {
     [name: string]: any,
     slides: Array<SlideBasic>
 };
