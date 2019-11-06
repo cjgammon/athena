@@ -46,3 +46,7 @@
 .athena-hud.visible{
 	display: block;
 }
+
+.athena-hud-input{
+	background: white;
+}

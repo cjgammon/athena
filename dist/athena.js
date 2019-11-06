@@ -95,7 +95,7 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#athena-root{\n\tposition: relative;\n}\n\n.athena-slide{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\topacity: 0;\n\tpointer-events: none;\n}\n\n.athena-slide.current{\n\topacity: 1;\n\tpointer-events: auto;\n}\n\n.athena-iframe-clickarea{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n}\n\n.athena-iframe-clickarea.focus{\n\tpointer-events: none;\n\tcursor: auto;\n}\n\n.athena-iframe.focus{\n\toutline: 100px solid rgba(255, 255, 255, .75);\n}\n\n.athena-hud{\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tbackground: rgba(0, 0, 0, 0.5);\n\tz-index: 100;\n\tdisplay: none;\n}\n\n.athena-hud.visible{\n\tdisplay: block;\n}\n");
+/* harmony default export */ __webpack_exports__["default"] = ("#athena-root{\n\tposition: relative;\n}\n\n.athena-slide{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\topacity: 0;\n\tpointer-events: none;\n}\n\n.athena-slide.current{\n\topacity: 1;\n\tpointer-events: auto;\n}\n\n.athena-iframe-clickarea{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n}\n\n.athena-iframe-clickarea.focus{\n\tpointer-events: none;\n\tcursor: auto;\n}\n\n.athena-iframe.focus{\n\toutline: 100px solid rgba(255, 255, 255, .75);\n}\n\n.athena-hud{\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tbackground: rgba(0, 0, 0, 0.5);\n\tz-index: 100;\n\tdisplay: none;\n}\n\n.athena-hud.visible{\n\tdisplay: block;\n}\n\n.athena-hud-input{\n\tbackground: white;\n}\n");
 
 /***/ }),
 
@@ -744,6 +744,7 @@ class Hud {
     show() {
         this.container.classList.add('visible');
         this.registerEvents();
+        this.addSearchInput();
         this.resetList();
         this.populateList();
     }
@@ -773,10 +774,14 @@ class Hud {
         this.list = [];
         for (let i = 0; i < src_models_deckModel__WEBPACK_IMPORTED_MODULE_0__["default"].slides.length; i++) {
             let slide = src_models_deckModel__WEBPACK_IMPORTED_MODULE_0__["default"].slides[i];
-            this.list.push({ number: i, name: slide.id });
+            let name = slide.id.toUpperCase();
+            this.list.push({ number: i, name });
         }
     }
     populateList() {
+        if (this.listContainer && this.listContainer.parentNode) {
+            this.listContainer.parentNode.removeChild(this.listContainer);
+        }
         this.listContainer = document.createElement('div');
         this.listContainer.className = 'athena-hud-list';
         for (let i = 0; i < this.list.length; i++) {
@@ -789,6 +794,42 @@ class Hud {
         }
         this.container.appendChild(this.listContainer);
     }
+    addSearchInput() {
+        this.input = document.createElement('div');
+        this.input.className = 'athena-hud-input';
+        this.input.classList.add('in');
+        this.container.appendChild(this.input);
+    }
+    typing(_char) {
+        this.input.innerText = this.input.innerHTML + _char;
+        this.search(this.input.innerText);
+    }
+    search(term) {
+        this.list = [];
+        this.searchString(term);
+        this.populateList();
+    }
+    searchString(term) {
+        let slides = src_models_deckModel__WEBPACK_IMPORTED_MODULE_0__["default"].slides;
+        let j = 0;
+        for (let i = 0; i < slides.length; i++) {
+            let slide = src_models_deckModel__WEBPACK_IMPORTED_MODULE_0__["default"].slides[i];
+            let name = slide.id.toUpperCase();
+            console.log(name);
+            if (name.search(term) === 0) {
+                this.list.push({ number: i, name });
+            }
+            else {
+                j++;
+            }
+        }
+    }
+    subtractCharacter() {
+        let orig = this.input.innerText;
+        let newString = orig.substr(0, orig.length - 1);
+        this.input.innerText = newString;
+        this.search(this.input.innerText);
+    }
     checkToggle(e) {
         switch (e.code) {
             case 'Escape':
@@ -797,7 +838,24 @@ class Hud {
         }
     }
     keyDown(e) {
-        console.log('keydown..', e.code);
+        console.log('keydown..', e.code, e.keyCode);
+        switch (e.code) {
+            case 'Backspace':
+                e.preventDefault();
+                //subract character
+                this.subtractCharacter();
+                break;
+            case 'Enter':
+                break;
+            case 'ArrowUp':
+                break;
+            case 'ArrowDown':
+                break;
+        }
+        if ((e.keyCode > 47 && e.keyCode < 58) ||
+            (e.keyCode > 64 && e.keyCode < 91)) {
+            this.typing(String.fromCharCode(e.keyCode));
+        }
     }
     keyUp(e) {
     }
