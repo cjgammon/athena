@@ -48,15 +48,16 @@
 }
 
 .athena-hud-list-item{
-	background: white;
+	background: rgba(255, 255, 255, 0.7);
 	color: black;
 }
 
 .athena-hud-list-item.selected{
-	background: black;
+	background: rgba(0, 0, 0, 0.7);
 	color: white;
 }
 
 .athena-hud-input{
-	background: white;
+	background: #ccc;
+	color: #333;
 }
