@@ -132,6 +132,7 @@ export default class Deck{
 
 	private registerEvents() {
 
+		bus.subscribe(SlideEvent.GOTO, (_id: string) => this.gotoSlideById(_id));
 		bus.subscribe(SlideEvent.NEXT, () => this.next());
 		bus.subscribe(SlideEvent.PREV, () => this.previous());
 		bus.subscribe(SlideEvent.TRIGGER, () => this.trigger());

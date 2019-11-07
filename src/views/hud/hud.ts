@@ -3,10 +3,13 @@ import SlideBasic from 'src/views/deck/slides/slide';
 
 import {default as bus, EventBus} from 'src/events/EventBus';
 import UserEvent from 'src/events/UserEvent';
+import SlideEvent from 'src/events/SlideEvent';
 
 interface IHudItem {
-    number: number,
-    name: string
+    listIndex: number,
+    slideIndex: number,
+    slideId: string,
+    slideEl: HTMLElement
 };
 
 export default class Hud{
@@ -17,13 +20,13 @@ export default class Hud{
     keyDownEvent: any;
     keyUpEvent: any;
     input: HTMLElement;
-    selected: number;
+    selected: number = 0;
+    shift: boolean = false;
 
     constructor(parent: HTMLElement) {
         this.container = document.createElement('div');
         this.container.className = 'athena-hud';
         parent.appendChild(this.container);
-
         bus.subscribe(UserEvent.KEYDOWN, (e: KeyboardEvent) => this.checkToggle(e));
     }
 
@@ -33,12 +36,15 @@ export default class Hud{
         this.addSearchInput();
         this.resetList();
         this.populateList();
+        this.updateSelected();
+        this.visible = true;
     }
 
     hide() {
         this.container.classList.remove('visible');
         this.container.innerHTML = '';
         this.removeEvents();
+        this.visible = false;
     }
 
     toggle() {
@@ -64,8 +70,12 @@ export default class Hud{
         this.list = [];
         for (let i = 0; i < DeckModel.slides.length; i++){
             let slide: SlideBasic = DeckModel.slides[i];
-            let name = slide.id.toUpperCase();
-            this.list.push({number: i, name});
+            this.list.push({
+                listIndex: i, 
+                slideId: slide.id, 
+                slideEl: null, 
+                slideIndex: slide.index
+            });
         }
     }
 
@@ -82,9 +92,10 @@ export default class Hud{
             let slide: IHudItem = this.list[i];
             let item: HTMLElement = document.createElement('div');
             item.className = 'athena-hud-list-item';
-            item.innerText = `${slide.number}: ${slide.name}`;
-            item.dataset.index = slide.number.toString();
+            item.innerText = `${slide.listIndex}: ${slide.slideId}`;
+            item.dataset.index = slide.slideId.toString();
             this.listContainer.appendChild(item);
+            this.list[i].slideEl = item;
         }
 
         this.container.appendChild(this.listContainer);
@@ -106,33 +117,30 @@ export default class Hud{
     private search(term: string) {
         this.list = [];
 
-        let num: number = parseInt(term);
-        if (isNaN(num)) {
-            this.searchString(term);
-        } else {
-            this.searchNumber(num);
-        }
+        this.searchList(term);
 
         this.populateList();
+        this.selected = 0;
     }
 
-    private searchNumber(num: number) {
-        //TODO;;
-    }
-
-    private searchString(term: string) {
-        
+    private searchList(term: string) {
         let slides = DeckModel.slides;
-        let j: number = 0;
 
         for (let i = 0; i < slides.length; i++){
             let slide: SlideBasic = DeckModel.slides[i];
-            let name = slide.id.toUpperCase();
+            let slideSearchProp: string = slide.id;
 
-            if (name.search(term) === 0) {
-                this.list.push({number: i, name});
-            } else {
-                j++;
+            if (!isNaN(parseInt(term))) { // handle search by index
+                slideSearchProp = slide.index.toString();
+            }
+
+            if (slideSearchProp.search(term) === 0) {
+                this.list.push({
+                    listIndex: i, 
+                    slideId: slide.id, 
+                    slideIndex: slide.index, 
+                    slideEl: null
+                });
             }
         }
     }
@@ -146,6 +154,17 @@ export default class Hud{
         this.search(this.input.innerText);
     }
 
+    private updateSelected() {
+
+        for (let i: number = 0; i < this.list.length; i++) {
+            this.list[i].slideEl.classList.remove('selected');
+        }
+
+        let selected:IHudItem = this.list[this.selected];
+        let el:HTMLElement = selected.slideEl;
+        el.classList.add('selected');
+    }
+
     private checkToggle(e: KeyboardEvent) {
         switch(e.code) {
             case 'Escape':
@@ -155,7 +174,10 @@ export default class Hud{
     }
 
     private keyDown(e: KeyboardEvent) {
-        console.log('keydown..', e.code, e.keyCode);
+
+        if (e.code.toLowerCase().indexOf('shift') > -1){
+            this.shift = true;
+        }
 
         switch(e.code) {
             case 'Backspace':
@@ -163,25 +185,36 @@ export default class Hud{
                 this.subtractCharacter();
                 break;
             case 'Enter':
-
+                bus.dispatch(SlideEvent.GOTO, this.list[this.selected].slideId);
+                this.toggle();
                 break;
             case 'ArrowUp':
-
+                this.selected = this.selected > 0 ? this.selected - 1 : this.selected;
                 break;
             case 'ArrowDown':
-
+                this.selected = this.selected < this.list.length - 1 ? this.selected + 1 : this.selected;
                 break;
         }
 
         if ((e.keyCode > 47 && e.keyCode < 58) ||
             (e.keyCode > 64 && e.keyCode < 91)) 
         {
-            this.typing(String.fromCharCode(e.keyCode));
+            let char: string = String.fromCharCode(e.keyCode);
+            if (!this.shift) {
+                char = char.toLowerCase();
+            }
+            this.typing(char);
+        }
+
+        if (this.list.length > 0){
+            this.updateSelected();
         }
 
     }
 
     private keyUp(e: KeyboardEvent) {
-
+        if (e.code.toLowerCase().indexOf('shift') > -1){
+            this.shift = false;
+        }
     }
 }

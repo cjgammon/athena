@@ -95,7 +95,7 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#athena-root{\n\tposition: relative;\n}\n\n.athena-slide{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\topacity: 0;\n\tpointer-events: none;\n}\n\n.athena-slide.current{\n\topacity: 1;\n\tpointer-events: auto;\n}\n\n.athena-iframe-clickarea{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n}\n\n.athena-iframe-clickarea.focus{\n\tpointer-events: none;\n\tcursor: auto;\n}\n\n.athena-iframe.focus{\n\toutline: 100px solid rgba(255, 255, 255, .75);\n}\n\n.athena-hud{\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tbackground: rgba(0, 0, 0, 0.5);\n\tz-index: 100;\n\tdisplay: none;\n}\n\n.athena-hud.visible{\n\tdisplay: block;\n}\n\n.athena-hud-input{\n\tbackground: white;\n}\n");
+/* harmony default export */ __webpack_exports__["default"] = ("#athena-root{\n\tposition: relative;\n}\n\n.athena-slide{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\topacity: 0;\n\tpointer-events: none;\n}\n\n.athena-slide.current{\n\topacity: 1;\n\tpointer-events: auto;\n}\n\n.athena-iframe-clickarea{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n}\n\n.athena-iframe-clickarea.focus{\n\tpointer-events: none;\n\tcursor: auto;\n}\n\n.athena-iframe.focus{\n\toutline: 100px solid rgba(255, 255, 255, .75);\n}\n\n.athena-hud{\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tbackground: rgba(0, 0, 0, 0.5);\n\tz-index: 100;\n\tdisplay: none;\n}\n\n.athena-hud.visible{\n\tdisplay: block;\n}\n\n.athena-hud-list-item{\n\tbackground: white;\n\tcolor: black;\n}\n\n.athena-hud-list-item.selected{\n\tbackground: black;\n\tcolor: white;\n}\n\n.athena-hud-input{\n\tbackground: white;\n}\n");
 
 /***/ }),
 
@@ -177,6 +177,7 @@ let bus = new EventBus();
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
+    GOTO: 'slide_goto',
     NEXT: 'slide_next',
     PREV: 'slide_prev',
     TRIGGER: 'slide_trigger',
@@ -462,6 +463,7 @@ class Deck {
         document.getElementsByTagName('head')[0].appendChild(style);
     }
     registerEvents() {
+        src_events_EventBus__WEBPACK_IMPORTED_MODULE_5__["default"].subscribe(src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_1__["default"].GOTO, (_id) => this.gotoSlideById(_id));
         src_events_EventBus__WEBPACK_IMPORTED_MODULE_5__["default"].subscribe(src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_1__["default"].NEXT, () => this.next());
         src_events_EventBus__WEBPACK_IMPORTED_MODULE_5__["default"].subscribe(src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_1__["default"].PREV, () => this.previous());
         src_events_EventBus__WEBPACK_IMPORTED_MODULE_5__["default"].subscribe(src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_1__["default"].TRIGGER, () => this.trigger());
@@ -728,6 +730,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var src_models_deckModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! src/models/deckModel */ "./src/models/deckModel.ts");
 /* harmony import */ var src_events_EventBus__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/events/EventBus */ "./src/events/EventBus.ts");
 /* harmony import */ var src_events_UserEvent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/events/UserEvent */ "./src/events/UserEvent.ts");
+/* harmony import */ var src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/events/SlideEvent */ "./src/events/SlideEvent.ts");
+
 
 
 
@@ -736,6 +740,8 @@ class Hud {
     constructor(parent) {
         this.list = [];
         this.visible = false;
+        this.selected = 0;
+        this.shift = false;
         this.container = document.createElement('div');
         this.container.className = 'athena-hud';
         parent.appendChild(this.container);
@@ -747,11 +753,14 @@ class Hud {
         this.addSearchInput();
         this.resetList();
         this.populateList();
+        this.updateSelected();
+        this.visible = true;
     }
     hide() {
         this.container.classList.remove('visible');
         this.container.innerHTML = '';
         this.removeEvents();
+        this.visible = false;
     }
     toggle() {
         this.visible = !this.visible;
@@ -774,8 +783,12 @@ class Hud {
         this.list = [];
         for (let i = 0; i < src_models_deckModel__WEBPACK_IMPORTED_MODULE_0__["default"].slides.length; i++) {
             let slide = src_models_deckModel__WEBPACK_IMPORTED_MODULE_0__["default"].slides[i];
-            let name = slide.id.toUpperCase();
-            this.list.push({ number: i, name });
+            this.list.push({
+                listIndex: i,
+                slideId: slide.id,
+                slideEl: null,
+                slideIndex: slide.index
+            });
         }
     }
     populateList() {
@@ -788,9 +801,10 @@ class Hud {
             let slide = this.list[i];
             let item = document.createElement('div');
             item.className = 'athena-hud-list-item';
-            item.innerText = `${slide.number}: ${slide.name}`;
-            item.dataset.index = slide.number.toString();
+            item.innerText = `${slide.listIndex}: ${slide.slideId}`;
+            item.dataset.index = slide.slideId.toString();
             this.listContainer.appendChild(item);
+            this.list[i].slideEl = item;
         }
         this.container.appendChild(this.listContainer);
     }
@@ -806,21 +820,25 @@ class Hud {
     }
     search(term) {
         this.list = [];
-        this.searchString(term);
+        this.searchList(term);
         this.populateList();
+        this.selected = 0;
     }
-    searchString(term) {
+    searchList(term) {
         let slides = src_models_deckModel__WEBPACK_IMPORTED_MODULE_0__["default"].slides;
-        let j = 0;
         for (let i = 0; i < slides.length; i++) {
             let slide = src_models_deckModel__WEBPACK_IMPORTED_MODULE_0__["default"].slides[i];
-            let name = slide.id.toUpperCase();
-            console.log(name);
-            if (name.search(term) === 0) {
-                this.list.push({ number: i, name });
+            let slideSearchProp = slide.id;
+            if (!isNaN(parseInt(term))) { // handle search by index
+                slideSearchProp = slide.index.toString();
             }
-            else {
-                j++;
+            if (slideSearchProp.search(term) === 0) {
+                this.list.push({
+                    listIndex: i,
+                    slideId: slide.id,
+                    slideIndex: slide.index,
+                    slideEl: null
+                });
             }
         }
     }
@@ -830,6 +848,14 @@ class Hud {
         this.input.innerText = newString;
         this.search(this.input.innerText);
     }
+    updateSelected() {
+        for (let i = 0; i < this.list.length; i++) {
+            this.list[i].slideEl.classList.remove('selected');
+        }
+        let selected = this.list[this.selected];
+        let el = selected.slideEl;
+        el.classList.add('selected');
+    }
     checkToggle(e) {
         switch (e.code) {
             case 'Escape':
@@ -838,26 +864,42 @@ class Hud {
         }
     }
     keyDown(e) {
-        console.log('keydown..', e.code, e.keyCode);
+        console.log(e.code);
+        if (e.code.toLowerCase().indexOf('shift') > -1) {
+            this.shift = true;
+        }
         switch (e.code) {
             case 'Backspace':
                 e.preventDefault();
-                //subract character
                 this.subtractCharacter();
                 break;
             case 'Enter':
+                src_events_EventBus__WEBPACK_IMPORTED_MODULE_1__["default"].dispatch(src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_3__["default"].GOTO, this.list[this.selected].slideId);
+                this.toggle();
                 break;
             case 'ArrowUp':
+                this.selected = this.selected > 0 ? this.selected - 1 : this.selected;
                 break;
             case 'ArrowDown':
+                this.selected = this.selected < this.list.length - 1 ? this.selected + 1 : this.selected;
                 break;
         }
         if ((e.keyCode > 47 && e.keyCode < 58) ||
             (e.keyCode > 64 && e.keyCode < 91)) {
-            this.typing(String.fromCharCode(e.keyCode));
+            let char = String.fromCharCode(e.keyCode);
+            if (!this.shift) {
+                char = char.toLowerCase();
+            }
+            this.typing(char);
+        }
+        if (this.list.length > 0) {
+            this.updateSelected();
         }
     }
     keyUp(e) {
+        if (e.code.toLowerCase().indexOf('shift') > -1) {
+            this.shift = false;
+        }
     }
 }
 

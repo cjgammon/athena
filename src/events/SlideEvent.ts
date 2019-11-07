@@ -1,5 +1,6 @@
 
 export default {
+    GOTO: 'slide_goto',
     NEXT: 'slide_next',
     PREV: 'slide_prev',
     TRIGGER: 'slide_trigger',

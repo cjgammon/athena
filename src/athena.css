@@ -47,6 +47,16 @@
 	display: block;
 }
 
+.athena-hud-list-item{
+	background: white;
+	color: black;
+}
+
+.athena-hud-list-item.selected{
+	background: black;
+	color: white;
+}
+
 .athena-hud-input{
 	background: white;
 }
