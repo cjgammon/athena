@@ -7,39 +7,26 @@ class FadeSlide extends Athena.slideTypes.step{
     }
 
     animIn() {
-        let SlideEvent = Athena.events.SlideEvent;
-
-        this.setCurrent(true);
-        this.bus.dispatch(SlideEvent.ANIMIN);
-        
+        super.animIn();
         this.el.style.opacity = '1';
-        this.to = setTimeout(() => this.animInComplete(), this.duration * 1000);
     }
 
     animOut() {
         let SlideEvent = Athena.events.SlideEvent;
 
         return new Promise((resolve, reject) => {
+            console.log('animout ', this.id);
+            this.el.style.opacity = '0';
             this.bus.dispatch(SlideEvent.ANIMOUT);
 
-            this.el.style.opacity = '0';
-            this.to = setTimeout(() => this.animOutComplete(resolve), this.duration * 1000);
+            clearTimeout(this.to);
+            this.to = setTimeout(() => {
+                console.log('animout complete', this.id);
+                this.setCurrent(false);
+                this.bus.dispatch(SlideEvent.DISSOLVE);
+                resolve();
+            }, this.duration * 1000);
         });
-    }
-
-    animInComplete() {
-        let SlideEvent = Athena.events.SlideEvent;
-
-        this.bus.dispatch(SlideEvent.RESOLVE);
-    }
-
-    animOutComplete(resolve) {
-        let SlideEvent = Athena.events.SlideEvent;
-
-        this.setCurrent(false);
-        this.bus.dispatch(SlideEvent.DISSOLVE);
-        this.el.style.transition = `opacity ${this.duration}s linear`;
-        resolve();
     }
 };
 Athena.slideTypes.fade = FadeSlide;
