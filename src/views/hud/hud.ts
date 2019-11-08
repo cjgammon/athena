@@ -165,7 +165,14 @@ export default class Hud{
         let el:HTMLElement = selected.slideEl;
         el.classList.add('selected');
 
-        //check if need to scroll
+        //update scroll
+        let rect: ClientRect = el.getBoundingClientRect();
+        if (rect.top + rect.height > window.innerHeight) {
+            this.listContainer.scrollTop += rect.top + rect.height - window.innerHeight;
+        } else if (rect.top < 0) {
+            this.listContainer.scrollTop += rect.top;
+        }
+
     }
 
     private checkToggle(e: KeyboardEvent) {
