@@ -32,6 +32,8 @@ export default class Hud{
 
     show() {
         this.container.classList.add('visible');
+
+        this.selected = DeckModel.currentSlide;
         this.registerEvents();
         this.addSearchInput();
         this.resetList();

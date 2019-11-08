@@ -749,6 +749,7 @@ class Hud {
     }
     show() {
         this.container.classList.add('visible');
+        this.selected = src_models_deckModel__WEBPACK_IMPORTED_MODULE_0__["default"].currentSlide;
         this.registerEvents();
         this.addSearchInput();
         this.resetList();
