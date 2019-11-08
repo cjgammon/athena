@@ -95,7 +95,7 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("#athena-root{\n\tposition: relative;\n}\n\n.athena-slide{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\topacity: 0;\n\tpointer-events: none;\n}\n\n.athena-slide.current{\n\topacity: 1;\n\tpointer-events: auto;\n}\n\n.athena-iframe-clickarea{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n}\n\n.athena-iframe-clickarea.focus{\n\tpointer-events: none;\n\tcursor: auto;\n}\n\n.athena-iframe.focus{\n\toutline: 100px solid rgba(255, 255, 255, .75);\n}\n\n.athena-hud{\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tbackground: rgba(0, 0, 0, 0.5);\n\tz-index: 100;\n\tdisplay: none;\n}\n\n.athena-hud.visible{\n\tdisplay: block;\n}\n\n.athena-hud-list-item{\n\tbackground: rgba(255, 255, 255, 0.7);\n\tcolor: black;\n}\n\n.athena-hud-list-item.selected{\n\tbackground: rgba(0, 0, 0, 0.7);\n\tcolor: white;\n}\n\n.athena-hud-input{\n\tbackground: #ccc;\n\tcolor: #333;\n}\n");
+/* harmony default export */ __webpack_exports__["default"] = ("#athena-root{\n\tposition: relative;\n}\n\n.athena-slide{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\topacity: 0;\n\tpointer-events: none;\n}\n\n.athena-slide.current{\n\topacity: 1;\n\tpointer-events: auto;\n}\n\n.athena-iframe-clickarea{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n}\n\n.athena-iframe-clickarea.focus{\n\tpointer-events: none;\n\tcursor: auto;\n}\n\n.athena-iframe.focus{\n\toutline: 100px solid rgba(255, 255, 255, .75);\n}\n\n.athena-hud{\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\tbackground: rgba(0, 0, 0, 0.5);\n\tz-index: 100;\n\tdisplay: none;\n}\n\n.athena-hud.visible{\n\tdisplay: block;\n}\n\n.athena-hud-list{\n\tposition: relative;\n\toverflow-y: scroll;\n\tmax-height: 100%;\n}\n\n.athena-hud-list-item{\n\tbackground: rgba(255, 255, 255, 0.7);\n\tcolor: black;\n}\n\n.athena-hud-list-item.selected{\n\tbackground: rgba(0, 0, 0, 0.7);\n\tcolor: white;\n}\n\n.athena-hud-input{\n\tbackground: #ccc;\n\tcolor: #333;\n}\n");
 
 /***/ }),
 
@@ -812,7 +812,6 @@ class Hud {
     addSearchInput() {
         this.input = document.createElement('div');
         this.input.className = 'athena-hud-input';
-        this.input.classList.add('in');
         this.container.appendChild(this.input);
     }
     typing(_char) {

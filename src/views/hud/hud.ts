@@ -106,7 +106,6 @@ export default class Hud{
     private addSearchInput() {
         this.input = document.createElement('div');
         this.input.className = 'athena-hud-input';
-        this.input.classList.add('in');
         this.container.appendChild(this.input);
     }
 
@@ -165,6 +164,8 @@ export default class Hud{
         let selected:IHudItem = this.list[this.selected];
         let el:HTMLElement = selected.slideEl;
         el.classList.add('selected');
+
+        //check if need to scroll
     }
 
     private checkToggle(e: KeyboardEvent) {
