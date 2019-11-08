@@ -74,6 +74,11 @@ export default class Deck{
 			slide = this.getSlideById(_n);
 		}
 
+		if (!slide){
+			console.error('no slide by that name');
+			slide = DeckModel.slides[0]; //return first slide
+		}
+		
 		//NOTE:: if any fun camera work it would go here.
 
 		let prevSlide: SlideBasic = DeckModel.slides[DeckModel.currentSlide];
