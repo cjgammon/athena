@@ -106,11 +106,11 @@ class Background{
             onUpdate: () => this.render()
         });
 
-        if () {
-            tl.set(this.cameraRig.position, {z: -pos});
-        } else {
+        //if () {
+        //    tl.set(this.cameraRig.position, {z: -pos});
+        //} else {
             tl.to(this.cameraRig.position, transitionDuration, {z: -pos});
-        }
+        //}
 
 
     }
