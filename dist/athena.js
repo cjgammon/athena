@@ -183,8 +183,8 @@ __webpack_require__.r(__webpack_exports__);
     TRIGGER: 'slide_trigger',
     ANIMIN: 'anim_in',
     ANIMOUT: 'anim_out',
-    RESOLVE: 'slide_resolve',
-    DISSOLVE: 'slide_dissolve'
+    ANIMIN_COMPLETE: 'anim_in_complete',
+    ANIMOUT_COMPLETE: 'anim_out_complete'
 });
 
 
@@ -305,7 +305,7 @@ let ConfigModel = {
 __webpack_require__.r(__webpack_exports__);
 ;
 let DeckModel = {
-    currentSlide: 0,
+    currentSlide: -1,
     slides: []
 };
 /* harmony default export */ __webpack_exports__["default"] = (DeckModel);
@@ -418,12 +418,14 @@ class Deck {
         }
         //NOTE:: if any fun camera work it would go here.
         let prevSlide = src_models_deckModel__WEBPACK_IMPORTED_MODULE_3__["default"].slides[src_models_deckModel__WEBPACK_IMPORTED_MODULE_3__["default"].currentSlide];
-        if (prevSlide.isCurrent()) {
+        let transition = prevSlide && prevSlide.isCurrent() ? true : false;
+        //console.log('set slide', prevSlide.id, slide.id, transition);
+        if (transition) {
             prevSlide.animOut()
                 .then(() => slide.animIn());
         }
         else {
-            slide.animIn();
+            slide.animIn(true);
         }
     }
     getSlideFromHash() {
@@ -551,18 +553,26 @@ class SlideBasic {
         this.bus = src_events_EventBus__WEBPACK_IMPORTED_MODULE_2__["default"]; //make accessible on slide for extensibility
         _el.classList.add('athena-slide');
     }
-    animIn() {
+    animIn(jump = false) {
         this.setCurrent(true);
         src_events_EventBus__WEBPACK_IMPORTED_MODULE_2__["default"].dispatch(src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_0__["default"].ANIMIN);
-        src_events_EventBus__WEBPACK_IMPORTED_MODULE_2__["default"].dispatch(src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_0__["default"].RESOLVE);
+        this.animInComplete();
     }
     animOut() {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             this.setCurrent(false);
             src_events_EventBus__WEBPACK_IMPORTED_MODULE_2__["default"].dispatch(src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_0__["default"].ANIMOUT);
-            src_events_EventBus__WEBPACK_IMPORTED_MODULE_2__["default"].dispatch(src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_0__["default"].DISSOLVE);
+            this.animOutComplete();
             resolve();
         });
+    }
+    animInComplete() {
+        this.setCurrent(true);
+        src_events_EventBus__WEBPACK_IMPORTED_MODULE_2__["default"].dispatch(src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_0__["default"].ANIMIN_COMPLETE);
+    }
+    animOutComplete() {
+        this.setCurrent(false);
+        src_events_EventBus__WEBPACK_IMPORTED_MODULE_2__["default"].dispatch(src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_0__["default"].ANIMOUT_COMPLETE);
     }
     trigger() {
         src_events_EventBus__WEBPACK_IMPORTED_MODULE_2__["default"].dispatch(src_events_SlideEvent__WEBPACK_IMPORTED_MODULE_0__["default"].NEXT);

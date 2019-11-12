@@ -35,21 +35,29 @@ export default class SlideBasic implements ISlide{
         _el.classList.add('athena-slide');
     }
 
-    animIn() {
+    animIn(jump: boolean = false) {
         this.setCurrent(true);
         bus.dispatch(SlideEvent.ANIMIN);
-        
-        bus.dispatch(SlideEvent.RESOLVE);
+        this.animInComplete();
     }
 
     animOut(): Promise<any> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             this.setCurrent(false);
             bus.dispatch(SlideEvent.ANIMOUT);
-
-            bus.dispatch(SlideEvent.DISSOLVE);
+            this.animOutComplete()
             resolve();
         });
+    }
+
+    animInComplete() {
+        this.setCurrent(true);
+        bus.dispatch(SlideEvent.ANIMIN_COMPLETE);
+    }
+
+    animOutComplete() {
+        this.setCurrent(false);
+        bus.dispatch(SlideEvent.ANIMOUT_COMPLETE);
     }
 
     trigger() {

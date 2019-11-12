@@ -1,8 +1,9 @@
+
 class ThreeD extends Athena.slideTypes.basic{
 
     constructor(_index, _el) {
         super(_index, _el);
-        this.duration = _el.dataset.transitionDuration || 0.2;
+        this.duration = _el.dataset.transitionDuration || 0.5;
         this.pos = _el.dataset.pos;
 
         _el.style.opacity = '0';
@@ -14,12 +15,25 @@ class ThreeD extends Athena.slideTypes.basic{
         _el.style.left = '-50vw';
         _el.style.width = '100vw';
         _el.style.height = '100vh';
-        _el.style.background = 'rgba(255, 0, 0, 0.2)';
     }
     
-    animIn() {
-        super.animIn();
+    animIn(force) {
+        let SlideEvent = Athena.events.SlideEvent;
+
+        if (force) {
+            this.el.style.transition = `none`;
+        } else {
+            this.el.style.transition = `opacity ${this.duration}s linear`;
+        }
+
         this.el.style.opacity = '1';
+        this.setCurrent(true);
+        this.bus.dispatch(SlideEvent.ANIMIN, {force});
+
+        clearTimeout(this.to);
+        this.to = setTimeout(() => {
+            this.bus.dispatch(SlideEvent.RESOLVE);
+        }, this.duration * 1000);
     }
 
     animOut() {
@@ -29,12 +43,9 @@ class ThreeD extends Athena.slideTypes.basic{
             this.el.style.opacity = '0';
             this.bus.dispatch(SlideEvent.ANIMOUT);
 
-            clearTimeout(this.to);
-            this.to = setTimeout(() => {
-                this.setCurrent(false);
-                this.bus.dispatch(SlideEvent.DISSOLVE);
-                resolve();
-            }, this.duration * 1000);
+            this.setCurrent(false);
+            this.bus.dispatch(SlideEvent.DISSOLVE);
+            resolve();
         });
         
     }

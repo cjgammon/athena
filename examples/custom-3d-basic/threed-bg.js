@@ -2,6 +2,7 @@
 class Background{
     constructor(selector) {
         this.perspective = 35;
+
         this.canvas = document.querySelector(selector);
         
         this.createThreeScene();
@@ -25,6 +26,8 @@ class Background{
         document.body.style.width = '100vw';
         document.body.style.height = '100vh';
         document.body.style.overflow = 'hidden';
+
+        this.render();
     }
 
     createThreeScene() {
@@ -65,21 +68,21 @@ class Background{
 
         let eventBus = Athena.eventBus;
         let SlideEvent = Athena.events.SlideEvent;
-        eventBus.subscribe(SlideEvent.ANIMIN, () => this.animIn());
+
+        eventBus.subscribe(SlideEvent.ANIMIN, (force) => this.animIn(force));
 
         window.addEventListener('resize', () => this.resize());
 
-        this.render();
     }
 
     resize() {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize( window.innerWidth, window.innerHeight );
-
     }
 
     render() {
+        console.log(this.cameraRig.position.z);
         if (this.domCamera){
             let _z = -parseFloat(this.cameraRig.position.z);
             this.domCamera.style.transform = `translate3d(0px, 0px, ${_z}px)`;
@@ -87,32 +90,37 @@ class Background{
         this.renderer.render(this.scene, this.camera);
     }
 
-    animIn() {
-        let transitionDuration = 1;
-        let slideInfo = Athena.slides;
-        let slides = slideInfo.slides;
-        let current = slideInfo.currentSlide;
+    animIn(data) {
+        console.log('animin', data.force);
 
-        let currentSlide = slides[current];
-        let el = currentSlide.el;
+        let el = this.getCurrentSlideEl();
 
         if (!el.dataset.pos) {
             return;
         }
 
         let pos = el.dataset.pos;
+        let duration = el.dataset.transitionDuration || 0.5;
 
         let tl = new TimelineLite({
-            onUpdate: () => this.render()
+            onUpdate: () => this.render(),
+            onComplete: () => this.render()
         });
 
-        //if () {
-        //    tl.set(this.cameraRig.position, {z: -pos});
-        //} else {
-            tl.to(this.cameraRig.position, transitionDuration, {z: -pos});
-        //}
+        if (data.force) {
+            tl.set(this.cameraRig.position, {z: -pos});
+        } else {
+            tl.to(this.cameraRig.position, duration, {z: -pos});
+        }
+    }
 
-
+    getCurrentSlideEl() {
+        let slideInfo = Athena.slides;
+        let slides = slideInfo.slides;
+        let current = slideInfo.currentSlide;
+        let currentSlide = slides[current];
+        let el = currentSlide.el;
+        return el;
     }
 }
 

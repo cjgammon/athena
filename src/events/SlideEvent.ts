@@ -6,6 +6,6 @@ export default {
     TRIGGER: 'slide_trigger',
     ANIMIN: 'anim_in',
     ANIMOUT: 'anim_out',
-    RESOLVE: 'slide_resolve',
-    DISSOLVE: 'slide_dissolve'
+    ANIMIN_COMPLETE: 'anim_in_complete',
+    ANIMOUT_COMPLETE: 'anim_out_complete'
 };

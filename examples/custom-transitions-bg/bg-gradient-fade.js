@@ -1,3 +1,6 @@
+let eventBus = Athena.eventBus;
+let SlideEvent = Athena.events.SlideEvent;
+
 class Background {
 
     constructor(selector) {
@@ -7,25 +10,22 @@ class Background {
         this.canvas = document.querySelector(selector);
         this.ctx = this.canvas.getContext('2d');
 
-        let eventBus = Athena.eventBus;
-        let SlideEvent = Athena.events.SlideEvent;
-
         this.colorA = {r: 0, g: 0, b: 0, a: 0};
         this.colorB = {r: 0, g: 0, b: 0, a: 0};
 
-        eventBus.subscribe(SlideEvent.ANIMIN, () => this.animIn());
+        this.animInCompleteHandler = eventBus.subscribe(SlideEvent.ANIMIN_COMPLETE, () => this.firstTime());
+    }
 
-        setInterval(() => this.animIn(), 100);
+    firstTime() {
+        this.animInComplete();
+        this.animInCompleteHandler.unsubscribe();
+        eventBus.subscribe(SlideEvent.ANIMIN, () => this.animIn());
     }
 
     animIn() {
         let transitionDuration = 1;
-        let slideInfo = Athena.slides;
-        let slides = slideInfo.slides;
-        let current = slideInfo.currentSlide;
 
-        let currentSlide = slides[current];
-        let el = currentSlide.el;
+        let el = this.getCurrentEl();
 
         if (!el.dataset.gradient) {
             return;
@@ -49,6 +49,33 @@ class Background {
             r: colorB.r, g: colorB.g, b: colorB.b, a: colorB.a
         }, 0);
     }
+
+    animInComplete() {
+
+        let el = this.getCurrentEl();
+
+        if (!el.dataset.gradient) {
+            return;
+        }
+
+        let colors = el.dataset.gradient.split(':');
+
+        let colorA = this.rgbStringToObject(colors[0]);
+        let colorB = this.rgbStringToObject(colors[1]);
+
+        this.draw();
+
+        let tl = new TimelineLite({
+            onUpdate: () => this.draw()
+        });
+
+        tl.set(this.colorA, {
+            r: colorA.r, g: colorA.g, b: colorA.b, a: colorA.a
+        }, 0);
+        tl.set(this.colorB, {
+            r: colorB.r, g: colorB.g, b: colorB.b, a: colorB.a
+        }, 0);
+    }
     
     draw() {
         let w = this.canvas.width;
@@ -69,6 +96,15 @@ class Background {
         this.ctx.fillRect(-w / 1.5, -h / 1.5, w * 3, h * 3);
 
         this.ctx.restore();
+    }
+
+    getCurrentEl() {
+        let slideInfo = Athena.slides;
+        let slides = slideInfo.slides;
+        let current = slideInfo.currentSlide;
+        let currentSlide = slides[current];
+        let el = currentSlide.el;
+        return el;
     }
 
     rgbStringToObject(str) {

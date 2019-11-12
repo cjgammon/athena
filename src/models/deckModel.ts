@@ -6,7 +6,7 @@ export interface IDeckModel {
 };
 
 let DeckModel: IDeckModel = {
-    currentSlide: 0,
+    currentSlide: -1,
     slides: []
 };
 
