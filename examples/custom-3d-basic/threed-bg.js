@@ -42,7 +42,7 @@ class Background{
 
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color( 0x333333 );
-        this.scene.fog = new THREE.Fog( 0x333333, 1000, 2000 );
+        this.scene.fog = new THREE.Fog( 0x333333, 0, 500 );
 
         this.scene.add( this.cameraRig );
 
