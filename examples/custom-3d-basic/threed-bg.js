@@ -82,7 +82,6 @@ class Background{
     }
 
     render() {
-        console.log(this.cameraRig.position.z);
         if (this.domCamera){
             let _z = -parseFloat(this.cameraRig.position.z);
             this.domCamera.style.transform = `translate3d(0px, 0px, ${_z}px)`;
@@ -91,8 +90,6 @@ class Background{
     }
 
     animIn(data) {
-        console.log('animin', data.force);
-
         let el = this.getCurrentSlideEl();
 
         if (!el.dataset.pos) {
