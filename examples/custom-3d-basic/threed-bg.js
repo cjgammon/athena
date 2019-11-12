@@ -67,7 +67,16 @@ class Background{
         let SlideEvent = Athena.events.SlideEvent;
         eventBus.subscribe(SlideEvent.ANIMIN, () => this.animIn());
 
+        window.addEventListener('resize', () => this.resize());
+
         this.render();
+    }
+
+    resize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize( window.innerWidth, window.innerHeight );
+
     }
 
     render() {
@@ -97,7 +106,13 @@ class Background{
             onUpdate: () => this.render()
         });
 
-        tl.to(this.cameraRig.position, transitionDuration, {z: -pos});
+        if () {
+            tl.set(this.cameraRig.position, {z: -pos});
+        } else {
+            tl.to(this.cameraRig.position, transitionDuration, {z: -pos});
+        }
+
+
     }
 }
 

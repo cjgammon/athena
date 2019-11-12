@@ -7,6 +7,7 @@ class ThreeD extends Athena.slideTypes.basic{
 
         _el.style.opacity = '0';
         _el.style.transition = `opacity ${this.duration}s linear`;
+
         _el.style.transform = `translate3d(0, 0, -${this.pos}px)`;
         _el.style.transformOrigin = `center center`;
         _el.style.top = '-50vh';
@@ -14,10 +15,6 @@ class ThreeD extends Athena.slideTypes.basic{
         _el.style.width = '100vw';
         _el.style.height = '100vh';
         _el.style.background = 'rgba(255, 0, 0, 0.2)';
-
-        setTimeout(() => {
-
-        }, 100);
     }
     
     animIn() {
